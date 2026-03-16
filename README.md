@@ -48,10 +48,10 @@ OpenClaw 是一个本地运行的 AI 助手框架，是 AI Agent 时代的操作
 - [09. 记忆系统进阶](./docs/09-memory-advanced.md) — 向量存储、跨会话上下文
 - [10. 工作流进阶](./docs/10-workflow-advanced.md) — 高级触发器与实战案例
 
-### 🏢 企业级应用
-- [11. 安全配置](./docs/11-security.md) — 企业级安全设置
-- [12. 性能优化](./docs/12-performance.md) — 大规模部署
-- [13. 案例集](./docs/13-cases.md) — 真实企业案例
+### 🚀 创业与落地
+- [11. 用 OpenClaw 打造 AI 产品](./docs/11-product.md) — 产品思维、变现模式、快速上线
+- [12. 企业级部署](./docs/12-enterprise.md) — Docker 部署、安全配置、监控运维
+- [13. 最佳实践](./docs/13-best-practices.md) — 开发、运维、安全、性能最佳实践
 
 ## 🗺️ 学习路径
 
