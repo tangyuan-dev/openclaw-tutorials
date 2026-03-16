@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/github/license/tangyuan-dev/openclaw-tutorials)](LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/tangyuan-dev/openclaw-tutorials)](https://github.com/tangyuan-dev/openclaw-tutorials/commits)
 
-> OpenClaw — 让 AI 成为你的同事，而非工具
+> OpenClaw — AI Agent 时代，让每个人都能成为 AI 工程师
 
 ## 📖 什么是 OpenClaw？
 
