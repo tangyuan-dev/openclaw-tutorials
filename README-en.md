@@ -5,7 +5,7 @@ Local AI Assistant | Your Smart Work Partner
 [![Star](https://img.shields.io/github/stars/tangyuan-dev/openclaw-tutorials?style=social)](https://github.com/tangyuan-dev/openclaw-tutorials/stargazers)
 [![License](https://img.shields.io/github/license/tangyuan-dev/openclaw-tutorials)](LICENSE)
 
-> OpenClaw — In the AI Agent Era, Everyone Can Have an AI Coworker and Friend
+> OpenClaw — The Operating System for the AI Agent Era, Co-create the Future with AI
 
 ## 📖 What is OpenClaw?
 
