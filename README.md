@@ -1,5 +1,7 @@
 # 🚀 OpenClaw 完全指南
 
+[English](./README-en.md) | 中文
+
 本地 AI 助手 | 你的智能工作伙伴
 
 [![Star](https://img.shields.io/github/stars/tangyuan-dev/openclaw-tutorials?style=social)](https://github.com/tangyuan-dev/openclaw-tutorials/stargazers)
