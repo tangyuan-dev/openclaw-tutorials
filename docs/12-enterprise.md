@@ -1,294 +1,351 @@
-# 12. 企业级部署指南
+# 12. 企业级部署 — Docker 与运维
 
-本文介绍如何将 OpenClaw 部署到企业环境。
+> **💡 Motto**: "部署一次，稳跑一年"
 
-## 企业需求
+这节教程的目标：学会用 Docker 部署 OpenClaw，掌握企业级安全配置、监控和运维。
 
-### 常见企业场景
+---
 
-| 场景 | 需求 |
-|------|------|
-| 内部客服 | 多员工、多渠道、安全 |
-| 知识库 | 私有数据、向量化 |
-| 流程自动化 | RPA、审批流 |
-| 数据分析 | API 对接、报表 |
+## 🧩 这节学什么
 
-## 部署架构
+| 技能 | 预计时间 | 难度 |
+|------|---------|------|
+| Docker 部署 | 10 分钟 | ⭐ |
+| 安全配置 | 10 分钟 | ⭐⭐ |
+| 监控与告警 | 10 分钟 | ⭐⭐ |
+| 备份与恢复 | 10 分钟 | ⭐⭐ |
 
-### 单机部署
+---
 
-```
-┌─────────────┐
-│   OpenClaw │
-├─────────────┤
-│  Skills     │
-│  Memory     │
-│  Channels   │
-└─────────────┘
-```
+## 🎯 目标：部署一个稳定的企业级 AI 服务
 
-### 集群部署
+学完这节，你将：
+- 会用 Docker 部署
+- 懂得配置安全
+- 会设置监控告警
+- 能做数据备份
 
-```
-           ┌─────────────┐
-           │   Nginx     │
-           └──────┬──────┘
-                  │
-      ┌───────────┼───────────┐
-      │           │           │
-┌─────┴─────┐ ┌──┴────┐ ┌───┴────┐
-│ OpenClaw 1│ │ OpenClaw 2│ │OpenClaw3│
-│ (Worker)  │ │(Worker) │ │(Worker)│
-└───────────┘ └────────┘ └────────┘
-      │           │           │
-      └───────────┼───────────┘
-                  │
-           ┌──────┴──────┐
-           │   Redis     │
-           │   (共享)     │
-           └─────────────┘
+---
+
+## 🚀 第一步：Docker 部署（最简单）
+
+### 为什么要用 Docker？
+
+- 一键部署，不踩坑
+- 环境一致，不出错
+- 随时迁移，不担心
+
+### 1 分钟部署
+
+```bash
+# 1. 安装 Docker Desktop (Windows/Mac)
+# https://www.docker.com/products/docker-desktop/
+
+# 2. 创建配置文件
+mkdir openclaw-deploy && cd openclaw-deploy
 ```
 
-## Docker 部署
-
-### 1. 创建 Dockerfile
-
-```dockerfile
-FROM node:20-alpine
-
-WORKDIR /app
-
-# 安装依赖
-COPY package*.json ./
-RUN npm install --production
-
-# 复制应用
-COPY . .
-
-# 暴露端口
-EXPOSE 8080
-
-# 启动
-CMD ["npm", "start"]
-```
-
-### 2. 创建 docker-compose.yml
+### 创建 docker-compose.yml
 
 ```yaml
 version: '3.8'
 
 services:
   openclaw:
-    build: .
+    image: openclaw/openclaw:latest
     ports:
       - "8080:8080"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - DATABASE_URL=postgres://user:pass@db:5432/openclaw
-    depends_on:
-      - db
-      - redis
-
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: openclaw
+      - OPENCLAW_MODEL=minimax
+      - OPENCLAW_API_KEY=${OPENCLAW_API_KEY}
+      - OPENCLAW_CHANNEL=feishu
+      - FEISHU_APP_ID=${FEISHU_APP_ID}
+      - FEISHU_APP_SECRET=${FEISHU_APP_SECRET}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data:/app/data
+      - ./config:/app/config
+    restart: unless-stopped
 
+  # 可选：Redis 缓存
   redis:
-    image: redis:7
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
     volumes:
       - redis_data:/data
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
   redis_data:
 ```
 
-### 3. 启动
+### 创建 .env 文件
 
 ```bash
-docker-compose up -d
+# .env
+OPENCLAW_API_KEY=your-api-key-here
+FEISHU_APP_ID=your-feishu-app-id
+FEISHU_APP_SECRET=your-feishu-app-secret
 ```
 
-## 安全配置
+### 启动
 
-### 1. API 鉴权
+```bash
+# 启动服务
+docker-compose up -d
+
+# 查看状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f
+```
+
+### 访问
+
+- 本地：http://localhost:8080
+- 远程： http://你的IP:8080
+
+---
+
+## 🚀 第二步：安全配置
+
+### 1. API 密钥保护
+
+```yaml
+# docker-compose.yml 中
+environment:
+  - OPENCLAW_API_KEY=${OPENCLAW_API_KEY}
+```
+
+**不要把密钥写死在代码里！** 用环境变量或 .env 文件。
+
+### 2. 限制访问 IP
 
 ```yaml
 # config.yaml
 security:
-  apiKey:
-    enabled: true
-    keys:
-      - key: "client-1"
-        name: "客户A"
-        rateLimit: 1000
-      - key: "client-2"
-        name: "客户B"
-        rateLimit: 500
-        
-  jwt:
-    enabled: true
-    secret: ${JWT_SECRET}
-    expiresIn: 24h
+  allowedIPs:
+    - 127.0.0.1
+    - 10.0.0.0/8    # 公司内网
+    - 192.168.1.0/24  # 家庭网络
 ```
 
-### 2. 敏感数据加密
+### 3. 禁用不需要的渠道
 
 ```yaml
-security:
-  encryption:
+channels:
+  - type: feishu
     enabled: true
-    algorithm: AES-256-GCM
-    
-  secrets:
-    management: vault  # HashiCorp Vault
+  - type: telegram
+    enabled: false  # 关闭不需要的
 ```
 
-### 3. 网络隔离
-
-```yaml
-security:
-  network:
-    # 只允许内网访问
-    allowedIPs:
-      - 10.0.0.0/8
-      - 172.16.0.0/12
-      
-    # 禁止外网访问敏感端口
-    blockedPorts:
-      - 22   # SSH
-      - 3306 # MySQL
-```
-
-## 监控运维
-
-### 1. 日志收集
+### 4. 启用日志审计
 
 ```yaml
 logging:
   level: info
-  outputs:
-    - type: file
-      path: /var/log/openclaw/app.log
-    - type: stdout
-    - type: remote
-      url: http://logs.example.com/ingest
-```
-
-### 2. 指标监控
-
-```yaml
-monitoring:
-  prometheus:
+  audit:
     enabled: true
-    port: 9090
+    logFile: /app/data/audit.log
     
-  metrics:
-    - requests_total
-    - requests_duration
-    - errors_total
-    - active_connections
+  # 记录所有 API 调用
+  accessLog: true
 ```
 
-### 3. 告警配置
+---
+
+## 🚀 第三步：监控与告警
+
+### 1. 查看日志
+
+```bash
+# 查看实时日志
+docker-compose logs -f
+
+# 查看最近 100 行
+docker-compose logs --tail 100
+
+# 查看错误日志
+docker-compose logs | grep ERROR
+```
+
+### 2. 设置告警（邮件/飞书通知）
 
 ```yaml
+# config.yaml
 alerts:
-  email:
-    enabled: true
-    to: admin@example.com
-    
-  webhook:
-    enabled: true
-    url: https://hooks.example.com/alert
-    
+  enabled: true
+  
+  # 错误率告警
   rules:
     - name: high_error_rate
-      condition: errors_rate > 0.05
-      message: "错误率超过 5%"
+      condition: errors > 10
+      interval: 5m
+      message: "错误率过高，请检查！"
       
-    - name: high_latency
-      condition: p95_latency > 1000
-      message: "延迟超过 1 秒"
+    - name: service_down
+      condition: status == down
+      message: "服务已宕机！"
+  
+  # 通知渠道
+  channels:
+    - type: email
+      to: admin@example.com
+    - type: webhook
+      url: https://notify.example.com/alert
 ```
 
-## 备份恢复
-
-### 1. 数据备份
+### 3. 监控指标
 
 ```bash
-# 备份数据库
-docker exec openclaw-db pg_dump -U user openclaw > backup.sql
+# 查看资源使用
+docker stats
 
+# 输出：
+# CONTAINER     CPU%   MEM USAGE/LIMIT   NET I/O
+# openclaw      2.5%   256MB/512MB       1.2MB/0.5MB
+```
+
+---
+
+## 🚀 第四步：备份与恢复
+
+### 1. 手动备份
+
+```bash
 # 备份配置
-cp ~/.openclaw/config.yaml ./config.backup.yaml
+cp -r ~/.openclaw/config.yaml ./backup/
+
+# 备份记忆数据
+cp -r ~/.openclaw/memory ./backup/memory
+
+# 备份技能
+cp -r ~/.openclaw/skills ./backup/skills
 ```
 
-### 2. 自动备份
+### 2. 自动备份（每天凌晨 2 点）
 
 ```yaml
-backup:
-  enabled: true
-  schedule: "0 2 * * *"  # 每天凌晨2点
-  
-  targets:
-    - type: database
-      destination: s3://backups/openclaw/db/
-    - type: config
-      destination: s3://backups/openclaw/config/
+# docker-compose.yml 中添加
+services:
+  backup:
+    image: openclaw/openclaw:latest
+    volumes:
+      - ./backup:/backup
+    command: >
+      sh -c "crond && tail -f /dev/null"
+    environment:
+      - BACKUP_ENABLED=true
+      - BACKUP_SCHEDULE="0 2 * * *"
+      - BACKUP_DEST=/backup
 ```
 
-### 3. 恢复
+### 3. 恢复数据
 
 ```bash
-# 恢复数据库
-docker exec -i openclaw-db psql -U user openclaw < backup.sql
+# 停止服务
+docker-compose down
 
-# 重启服务
-docker-compose restart
+# 恢复配置
+cp ./backup/config.yaml ~/.openclaw/config.yaml
+
+# 恢复记忆
+cp -r ./backup/memory ~/.openclaw/memory
+
+# 启动服务
+docker-compose up -d
 ```
 
-## 性能优化
+---
 
-### 1. 缓存
+## 🚀 第五步：域名与 HTTPS
 
-```yaml
-cache:
-  enabled: true
-  type: redis
-  
-  ttl:
-    user_session: 3600
-    api_response: 300
-    llm_response: 600
+### 1. 购买域名
+
+- 阿里云、腾讯云、Namecheap
+
+### 2. 配置 DNS
+
+```
+A 记录 @ 你的服务器IP
 ```
 
-### 2. 连接池
+### 3. 配置 Nginx + HTTPS（免费证书）
 
-```yaml
-database:
-  pool:
-    min: 5
-    max: 20
+```nginx
+# nginx.conf
+server {
+    listen 80;
+    server_name your-domain.com;
     
-redis:
-  pool:
-    min: 5
-    max: 50
+    # 自动申请 SSL 证书
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+    
+    location / {
+        return 301 https://$server_name$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;
+    
+    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+    
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
 ```
 
-### 3. 水平扩展
+### 4. 使用 Nginx Proxy Manager（可视化）
 
 ```bash
-# 增加 Worker
-docker-compose up -d --scale openclaw=3
+# docker-compose.yml
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - ./nginx/data:/data
 ```
 
-## 下一步
+---
 
-- [13. 最佳实践](./13-best-practices.md) — 开发与运维最佳实践
+## 🧪 生产环境检查清单
+
+| 检查项 | 状态 |
+|--------|------|
+| Docker 已安装 | ⬜ |
+| .env 配置完成 | ⬜ |
+| 防火墙端口开放（80, 443, 8080）| ⬜ |
+| 日志正常 | ⬜ |
+| 告警配置 | ⬜ |
+| 备份已测试 | ⬜ |
+| 域名解析正常 | ⬜ |
+| HTTPS 生效 | ⬜ |
+
+---
+
+## 🎉 这节目标达成
+
+✅ 会用 Docker 部署  
+✅ 懂得安全配置  
+✅ 会设置监控告警  
+✅ 能做数据备份  
+
+---
+
+## ➡️ 下节学什么
+
+- [13. 最佳实践](./13-best-practices.md) — 安全、性能、运维经验
