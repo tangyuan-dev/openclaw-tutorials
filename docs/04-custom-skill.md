@@ -1,138 +1,287 @@
-# 04. 自定义技能
+# 04. 自定义技能 — 教 AI 学会新技能
 
-本文介绍如何创建自定义技能，扩展 OpenClaw 的能力。
+> **💡 Motto**: "教 AI 学会新技能，它就能帮你干更多活"
 
-## 什么是技能？
+这节教程的目标：创建一个实用的技能（如天气查询），学会编写自己的技能。
 
-技能 (Skill) 是 OpenClaw 的扩展模块，可以：
-- 添加新的命令
-- 集成第三方 API
-- 自动化特定工作流
+---
 
-## 技能结构
+## 🧩 这节学什么
 
-```
-skills/
-└── my-skill/
-    ├── SKILL.md      # 技能定义
-    ├── index.js       # 入口文件
-    └── package.json   # 依赖（可选）
-```
+| 技能 | 预计时间 | 难度 |
+|------|---------|------|
+| 创建打招呼技能 | 5 分钟 | ⭐ |
+| 天气查询技能 | 10 分钟 | ⭐⭐ |
+| 技能配置与调试 | 5 分钟 | ⭐ |
 
-## 创建第一个技能
+---
 
-### 1. 创建技能目录
+## 🎯 目标：做一个天气预报技能
+
+学完这节，你将拥有一个可以说"北京天气怎么样"的 AI 助手。
+
+---
+
+## 🚀 第一步：创建技能结构
 
 ```bash
-mkdir -p skills/hello-world
+# 创建技能目录
+mkdir -p ~/.openclaw/skills/weather
+
+# 创建技能文件
+touch ~/.openclaw/skills/weather/SKILL.md
+touch ~/.openclaw/skills/weather/index.js
 ```
 
-### 2. 编写技能定义
+---
+
+## 📝 第二步：编写技能定义（SKILL.md）
 
 ```markdown
-# hello-world
+# weather - 天气预报技能
 
 ## 触发条件
-- 用户说 "hello" 或 "你好"
-- 用户说 "who are you" 或 "你是谁"
+- 用户说 "天气"、"查询天气"、"...天气怎么样"
+- 包含城市名：如"北京天气"、"上海天气怎么样"
 
 ## 功能
-- 打招呼并自我介绍
+- 查询指定城市的天气
+- 返回温度、天气状况、穿衣建议
 
 ## 示例
-用户: hello
-回复: 👋 你好！我是你的 AI 助手 OpenClaw！
+用户: 北京天气怎么样
+回复: 🌤️ 北京今天：25°C，晴。适合穿短袖。
 
-用户: 你是谁
-回复: 我是 OpenClaw，一个本地运行的 AI 助手...
+用户: 上海天气
+回复: 🌧️ 上海今天：18°C，小雨。记得带伞。
 ```
 
-### 3. 编写执行逻辑
+---
+
+## 💻 第三步：编写技能逻辑（index.js）
 
 ```javascript
-// index.js
-module.exports = {
-  name: 'hello-world',
-  description: '打招呼技能',
-  
-  async handle(context) {
-    const message = context.message.toLowerCase();
-    
-    if (message.includes('hello') || message.includes('你好')) {
-      return '👋 你好！我是 OpenClaw，你的 AI 助手！';
-    }
-    
-    if (message.includes('你是谁') || message.includes('who are you')) {
-      return '我是 OpenClaw，一个本地运行的 AI 助手。\n\n我可以帮你：\n- 写代码\n- 查资料\n- 自动化任务\n- 等等...';
-    }
-    
-    // 返回 null 表示不处理
-    return null;
-  }
-};
-```
-
-### 4. 注册技能
-
-技能目录放入 `~/.openclaw/skills/` 后会自动加载。
-
-## 技能开发进阶
-
-### 使用外部 API
-
-```javascript
-const axios = require('axios');
+// ~/.openclaw/skills/weather/index.js
 
 module.exports = {
   name: 'weather',
-  description: '查询天气',
+  description: '查询天气预报',
   
+  // 触发关键词
+  keywords: ['天气', 'weather', '温度'],
+  
+  // 处理消息
   async handle(context) {
     const message = context.message;
-    const city = this.extractCity(message);
     
+    // 1. 提取城市名
+    const city = this.extractCity(message);
     if (!city) {
-      return '请告诉我你想查询哪个城市的天气？';
+      return '请告诉我你想查询哪个城市的天气？比如"北京天气怎么样"';
     }
     
-    const weather = await axios.get(
-      `https://api.weather.com.cn?city=${city}`
-    );
+    // 2. 调用天气 API（这里用免费接口示例）
+    const weather = await this.getWeather(city);
+    if (!weather) {
+      return `抱歉，暂时无法获取 ${city} 的天气信息`;
+    }
     
-    return `🌤️ ${city}天气：${weather.data.temp}°C，${weather.data.condition}`;
+    // 3. 返回格式化结果
+    return this.formatReply(weather);
   },
   
+  // 提取城市名
   extractCity(message) {
-    // 提取城市名
-    const match = message.match(/天气.*?(\w+)/);
-    return match ? match[1] : null;
+    const cities = [
+      '北京', '上海', '广州', '深圳', '杭州', '南京', 
+      '成都', '重庆', '武汉', '西安', '苏州', '天津'
+    ];
+    
+    for (const city of cities) {
+      if (message.includes(city)) {
+        return city;
+      }
+    }
+    return null;
+  },
+  
+  // 获取天气数据（模拟）
+  async getWeather(city) {
+    // 实际项目中这里调用真实 API
+    // 如：https://www.tianqiapi.com/free/
+    
+    const mockData = {
+      '北京': { temp: 25, condition: '晴', advice: '适合穿短袖' },
+      '上海': { temp: 18, condition: '小雨', advice: '记得带伞' },
+      '广州': { temp: 28, condition: '多云', advice: '天气舒适' },
+      '深圳': { temp: 27, condition: '晴', advice: '适合户外活动' },
+      '杭州': { temp: 22, condition: '阴', advice: '建议带外套' },
+    };
+    
+    // 模拟网络延迟
+    await new Promise(r => setTimeout(r, 300));
+    
+    return mockData[city] || null;
+  },
+  
+  // 格式化回复
+  formatReply(weather) {
+    const emoji = {
+      '晴': '☀️',
+      '多云': '⛅',
+      '阴': '☁️',
+      '小雨': '🌧️',
+      '中雨': '🌧️',
+      '大雨': '⛈️',
+    };
+    
+    const cond = weather.condition;
+    return `${emoji[cond] || '🌤️'} ${city}今天：${weather.temp}°C，${weather.condition}。${weather.advice}！`;
   }
 };
 ```
 
-### 添加配置项
+---
+
+## 🧪 第四步：测试技能
+
+```bash
+# 重启 OpenClaw
+openclaw restart
+```
+
+**测试指令：**
+- "北京天气怎么样"
+- "上海天气"
+- "广州天气"
+
+---
+
+## 🎯 进阶：做一个"收藏夹"技能
+
+这个技能可以记住用户喜欢的东西。
+
+### 技能结构
+
+```
+~/.openclaw/skills/favorites/
+├── SKILL.md
+└── index.js
+```
+
+### SKILL.md
+
+```markdown
+# favorites - 收藏夹技能
+
+## 触发条件
+- 用户说 "收藏"、"记住"、"我喜欢"
+- 用户说 "我的收藏"、"看看我收藏了什么"
+
+## 功能
+- 收藏用户喜欢的内容
+- 查看收藏列表
+```
+
+### index.js
+
+```javascript
+// ~/.openclaw/skills/favorites/index.js
+
+const fs = require('fs');
+const path = require('path');
+
+module.exports = {
+  name: 'favorites',
+  description: '收藏夹技能',
+  
+  keywords: ['收藏', '记住', '我喜欢', '我的收藏'],
+  
+  async handle(context) {
+    const message = context.message;
+    const userId = context.userId;
+    const storagePath = path.join(__dirname, 'data', `${userId}.json`);
+    
+    // 1. 查看收藏
+    if (message.includes('查看') || message.includes('我的收藏')) {
+      const favorites = this.loadFavorites(storagePath);
+      if (favorites.length === 0) {
+        return '你还没有收藏任何内容，说"收藏 XXX"来添加。';
+      }
+      return '📚 你的收藏：\n' + favorites.map((f, i) => `${i+1}. ${f}`).join('\n');
+    }
+    
+    // 2. 添加收藏
+    const item = message.replace(/收藏|记住|我喜欢/, '').trim();
+    if (item) {
+      this.saveFavorite(storagePath, item);
+      return `✅ 已收藏：${item}`;
+    }
+    
+    return '请说"收藏 XXX"来添加收藏，或"查看我的收藏"来查看列表。';
+  },
+  
+  loadFavorites(path) {
+    try {
+      if (!fs.existsSync(path)) return [];
+      return JSON.parse(fs.readFileSync(path, 'utf-8'));
+    } catch {
+      return [];
+    }
+  },
+  
+  saveFavorite(path, item) {
+    const dir = path.replace(/[^/\\]+$/, '');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    
+    const favorites = this.loadFavorites(path);
+    favorites.push(item);
+    fs.writeFileSync(path, JSON.stringify(favorites, null, 2));
+  }
+};
+```
+
+---
+
+## 🔧 技能调试技巧
+
+### 1. 查看技能日志
+
+```bash
+openclaw logs --tail 50
+```
+
+### 2. 调试模式
 
 ```yaml
 # config.yaml
 skills:
   weather:
-    apiKey: ${WEATHER_API_KEY}
-    defaultCity: 北京
+    debug: true
 ```
 
+### 3. 常用技能模板
+
 ```javascript
-// 在技能中获取配置
+// 模板：带配置的技能
 module.exports = {
-  handle(context) {
-    const config = context.config.skills.weather;
-    // 使用 config.apiKey, config.defaultCity
+  name: 'xxx',
+  description: 'xxx',
+  
+  // 从 config 获取设置
+  init(config) {
+    this.apiKey = config.skills?.xxx?.apiKey;
+  },
+  
+  async handle(context) {
+    // 处理逻辑
   }
 };
 ```
 
-## 技能市场
+---
 
-OpenClaw 提供官方技能市场：
+## 📦 官方技能市场
 
 ```bash
 # 列出可用技能
@@ -140,12 +289,21 @@ openclaw skill list
 
 # 安装技能
 openclaw skill install weather
-
-# 卸载技能
-openclaw skill uninstall weather
+openclaw skill install github
 ```
 
-## 下一步
+---
 
-- [05. 记忆系统](./05-memory.md) — 让 OpenClaw 记住上下文
-- [06. 工作流自动化](./06-workflow.md) — 创建自动化工作流
+## 🎉 这节目标达成
+
+✅ 会创建自定义技能  
+✅ 会编写 SKILL.md 和 index.js  
+✅ 会调试技能  
+✅ 做出了天气预报技能  
+
+---
+
+## ➡️ 下节学什么
+
+- [05. 记忆系统](./05-memory.md) — 让 AI 记住你的偏好
+- [06. 工作流自动化](./06-workflow.md) — 告别重复任务

@@ -2,96 +2,113 @@
 
 [English](./README-en.md) | 中文
 
-**AI Agent 时代的操作系统** | 与 AI 共创美好未来
+**AI Agent 时代的操作系统** | 让 AI 帮你干活
 
 [![Star](https://img.shields.io/github/stars/tangyuan-dev/openclaw-tutorials?style=social)](https://github.com/tangyuan-dev/openclaw-tutorials/stargazers)
 [![License](https://img.shields.io/github/license/tangyuan-dev/openclaw-tutorials)](LICENSE)
-[![Last Commit](https://img.shields.io/github/last-commit/tangyuan-dev/openclaw-tutorials)](https://github.com/tangyuan-dev/openclaw-tutorials/commits)
 
-> OpenClaw — AI Agent 时代的操作系统，与 AI 共创美好未来
+> **装好就能用，3 句话让 AI 帮你干活** — 本教程手把手教你用 OpenClaw 打造个人 AI 助手
 
-## 📖 什么是 OpenClaw？
+---
 
-OpenClaw 是一个本地运行的 AI 助手框架，是 AI Agent 时代的操作系统：
+## ⭐ 核心理念（Motto）
 
-- 🖥️ **自动化工作流** — 浏览器操作、文件管理、代码执行
-- 💬 **多渠道接入** — Telegram、Discord、飞书、微信、Webchat
-- 🧠 **记忆系统** — 长期记忆 + 每日笔记，跨会话保持上下文
-- 🔌 **技能生态** — 可扩展的技能市场，随装随用
-- 🏠 **本地优先** — 数据留在本地，保护隐私
+每个章节一个核心口号，记住口号就学会了一半：
 
-## ✨ 为什么选择 OpenClaw？
+| 章节 | Motto |
+|------|-------|
+| 01 安装 | 装好就能用，3 句话让 AI 帮你干活 |
+| 02 第一个任务 | 不需要会代码，只需要说人话 |
+| 03 渠道配置 | 让 AI 随时随地响应你 |
+| 04 自定义技能 | 教 AI 学会新技能 |
+| 05 记忆系统 | 让 AI 记住你的偏好 |
+| 06 工作流自动化 | 告别重复任务 |
 
-| 特性 | 说明 |
-|------|------|
-| 🏠 **本地优先** | 数据留在本地，保护隐私 |
-| 🎯 **精准控制** | 细粒度权限，安全可控 |
-| 🔄 **持续学习** | 记忆系统让 AI 越用越懂你 |
-| 🛠️ **可扩展** | 技能市场，插件式架构 |
-| 🤝 **人机协作** | AI 是同事和朋友，不是工具 |
+---
 
 ## 📚 教程目录
 
-### 🚀 基础入门（新手推荐）
-- [01. 安装与配置](./docs/01-setup.md) — 10 分钟快速上手
-- [02. 第一个任务](./docs/02-first-task.md) — 用自然语言与 AI 协作
-- [03. 渠道配置](./docs/03-channels.md) — 连接 Telegram、Discord、飞书
+### 🚀 快速上手（30 分钟）
 
-### 🛠️ 进阶实战
-- [04. 自定义技能](./docs/04-custom-skill.md) — 创建你自己的 AI 技能
-- [05. 记忆系统](./docs/05-memory.md) — 让 AI 记住上下文
-- [06. 工作流自动化](./docs/06-workflow.md) — 自动化你的工作
+| 章节 | 标题 | 目标 |
+|------|------|------|
+| [01](./docs/01-setup.md) | 10 分钟做出你的第一个 AI 助手 | 装好 OpenClaw，发第一条指令 |
+| [02](./docs/02-first-task.md) | 用自然语言让 AI 帮你干活 | 指挥 AI 写代码、读文件、跑程序 |
+| [03](./docs/03-channels.md) | 把 AI 接入微信/飞书/Telegram | 让 AI 随时随地响应 |
 
-### 💎 高频场景技巧（推荐）
-- [07. Skill 开发实战](./docs/07-skill.md) — 技能开发模板与实战
-- [08. 高级 Skill 开发](./docs/08-advanced-skill.md) — 多模态、长对话、外部 API
-- [09. 记忆系统进阶](./docs/09-memory-advanced.md) — 向量存储、跨会话上下文
-- [10. 工作流进阶](./docs/10-workflow-advanced.md) — 高级触发器与实战案例
+### 🛠️ 进阶实战（1 小时）
+
+| 章节 | 标题 | 目标 |
+|------|------|------|
+| [04](./docs/04-custom-skill.md) | 自定义技能 | 教 AI 学会新技能 |
+| [05](./docs/05-memory.md) | 记忆系统 | 让 AI 记住你的偏好 |
+| [06](./docs/06-workflow.md) | 工作流自动化 | 告别重复任务 |
+
+### 💎 高级特性
+
+| 章节 | 标题 | 目标 |
+|------|------|------|
+| [07](./docs/07-skill.md) | Skill 开发实战 | 技能开发模板与实战 |
+| [08](./docs/08-advanced-skill.md) | 高级 Skill 开发 | 多模态、长对话、外部 API |
+| [09](./docs/09-memory-advanced.md) | 记忆系统进阶 | 向量存储、跨会话上下文 |
+| [10](./docs/10-workflow-advanced.md) | 工作流进阶 | 高级触发器与实战案例 |
 
 ### 🚀 创业与落地
-- [11. 用 OpenClaw 打造 AI 产品](./docs/11-product.md) — 产品思维、变现模式、快速上线
-- [12. 企业级部署](./docs/12-enterprise.md) — Docker 部署、安全配置、监控运维
-- [13. 最佳实践](./docs/13-best-practices.md) — 开发、运维、安全、性能最佳实践
 
-## 🗺️ 学习路径
+| 章节 | 标题 | 目标 |
+|------|------|------|
+| [11](./docs/11-product.md) | 用 OpenClaw 打造 AI 产品 | 产品思维、变现模式、快速上线 |
+| [12](./docs/12-enterprise.md) | 企业级部署 | Docker 部署、安全配置、监控运维 |
+| [13](./docs/13-best-practices.md) | 最佳实践 | 开发、运维、安全、性能 |
 
-### 零基础新手
-- **第 1 天**：读完基础入门，做出第一个作品
-- **第 1 周**：掌握渠道配置 + 自定义技能
-- **之后**：按需学习进阶内容
+---
 
-### 有编程基础
-- **第 1 天**：快速过完基础内容
-- **第 1 周**：学习自定义技能 + 工作流
-- **之后**：重点学习企业级应用
+## 🎯 学习路径
+
+### 🐣 零基础新手（推荐）
+
+| 天数 | 内容 | 产出 |
+|------|------|------|
+| 第 1 天 | 01 + 02 + 03 | 做出可用的 AI 助手，接入飞书/微信 |
+| 第 2-3 天 | 04 + 05 | 定制技能，让 AI 记住你 |
+| 第 4-7 天 | 06 | 自动化你的工作流 |
+
+### 💪 有编程基础
+
+| 天数 | 内容 | 产出 |
+|------|------|------|
+| 第 1 小时 | 01 + 02 | 快速过完基础 |
+| 第 1 天 | 04 + 06 | 技能开发 + 自动化 |
+| 第 1 周 | 07-10 | 进阶特性 |
+
+---
 
 ## 🚀 快速开始
 
 ```bash
-# 安装
+# 1. 安装（30 秒）
 npm install -g openclaw
 
-# 初始化
+# 2. 初始化（1 分钟）
 openclaw init
 
-# 启动
+# 3. 启动
 openclaw start
+
+# 4. 立即发送第一条指令：
+# "帮我写一个 Python 脚本，输出 Hello World"
 ```
 
-详细步骤见 [安装指南](./docs/01-setup.md)
-
-## 🔥 热门教程
-
-1. **用 OpenClaw 打造个人 AI 助手** — 让 AI 成为你的同事
-2. **自动化工作流实战** — 告别重复任务
-3. **多渠道接入指南** — Telegram、飞书、Discord 全覆盖
+---
 
 ## 🛠️ 技术栈
 
-- **运行时**: Node.js
-- **AI 接入**: OpenAI / Anthropic / Ollama / MiniMax
+- **运行时**: Node.js 18+
+- **AI 模型**: OpenAI / Anthropic / Ollama / MiniMax
 - **渠道**: Telegram, Discord, 飞书, WhatsApp, Signal, Webchat
 - **存储**: 本地文件系统 + SQLite
+
+---
 
 ## 📦 相关项目
 
@@ -100,16 +117,21 @@ openclaw start
 | [openclaw](https://github.com/openclaw/openclaw) | 核心框架 | ⭐ |
 | [openclaw-docs](https://github.com/openclaw/docs) | 官方文档 | ⭐ |
 
+---
+
 ## 🌐 外部资源
 
+- [learn-claude-code](https://github.com/shareAI-lab/learn-claude-code) — 从零构建 AI Agent（12.3k ⭐）
 - [鱼皮的 AI 指南](https://github.com/liyupi/ai-guide) — Vibe Coding 零基础教程
 - [Microsoft AI Agents for Beginners](https://github.com/microsoft/ai-agents-for-beginners) — Agent 设计模式
-- [Prompt Engineering Guide](https://github.com/dair-ai/Prompt-Engineering-Guide) — 提示词工程
-- [GenAI Agents](https://github.com/NirDiamant/GenAI_Agents) — Agent 技术汇总
+
+---
 
 ## 🤝 贡献
 
 欢迎提交 Issue 和 PR！请先阅读 [贡献指南](./CONTRIBUTING.md)。
+
+---
 
 ## 📄 License
 

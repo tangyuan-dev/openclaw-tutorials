@@ -1,134 +1,162 @@
-# 01. OpenClaw 安装与配置
+# 01. 10 分钟做出你的第一个 AI 助手
 
-本指南将帮助你完成 OpenClaw 的完整安装和配置。
+> **💡 Motto**: "装好就能用，3 句话让 AI 帮你干活"
 
-## 环境要求
+这节教程的目标：安装 OpenClaw，3 分钟让它跑起来，3 句话让它帮你完成第一个任务。
 
-| 要求 | 最低版本 |
+---
+
+## 🧩 这节学什么
+
+| 目标 | 预计时间 |
 |------|---------|
-| Node.js | 18.x |
-| 操作系统 | Windows / macOS / Linux |
-| 内存 | 4GB+ |
-| 磁盘空间 | 1GB+ |
+| 安装 OpenClaw | 3 分钟 |
+| 配置 AI 模型 | 2 分钟 |
+| 发送第一条指令 | 1 分钟 |
+| **总计** | **6 分钟** |
 
-## 安装步骤
+---
 
-### 1. 安装 Node.js
-
-**macOS / Linux:**
-```bash
-curl -fsSL https://fnm.vercel.app/install | bash
-fnm install 20
-fnm use 20
-```
-
-**Windows:**
-```powershell
-# 方法 1: 使用 winget
-winget install OpenJS.NodeJS.LTS
-
-# 方法 2: 使用 nvm-windows
-# 下载安装: https://github.com/coreybutler/nvm-windows
-nvm install 20
-nvm use 20
-```
-
-验证安装：
-```bash
-node --version  # 应显示 v20.x.x
-npm --version   # 应显示 10.x.x
-```
-
-### 2. 安装 OpenClaw
+## 🚀 第一步：安装（Windows/macOS/Linux 通用）
 
 ```bash
-# 全局安装
+# 1. 安装 Node.js (如果没有)
+# Windows: https://nodejs.org/ 下载 LTS 版本
+# macOS:  brew install node
+
+# 2. 一行命令安装 OpenClaw
 npm install -g openclaw
 
-# 验证安装
+# 3. 验证安装
 openclaw --version
 ```
 
-### 3. 初始化配置
-
-```bash
-# 初始化
-openclaw init
-
-# 按提示完成配置
-# - 选择 AI 模型 (OpenAI / Anthropic / Ollama / MiniMax)
-# - 配置 API Key
-# - 选择渠道 (Telegram / Discord / 飞书 等)
+**✅ 预期输出：**
+```
+openclaw v1.0.0
 ```
 
-### 4. 配置文件说明
+---
 
-安装完成后，会在用户目录生成配置文件：
+## ⚙️ 第二步：初始化（1 分钟）
+
+```bash
+# 初始化配置
+openclaw init
+```
+
+会让你选择：
+1. **AI 模型**：推荐选 `minimax`（国内免费速度快）或 `openai`
+2. **API Key**：粘贴你的密钥
+
+### 获取 API Key
+
+| 模型 | 获取地址 |
+|------|---------|
+| MiniMax | https://platform.minimaxi.com/ |
+| OpenAI | https://platform.openai.com/api-keys |
+| Anthropic | https://console.anthropic.com/ |
+
+> 💡 **学生/免费用户推荐 MiniMax**，国内直连，免费额度够用
+
+---
+
+## 🎯 第三步：启动并发送第一条指令
+
+```bash
+# 启动
+openclaw start
+```
+
+启动成功后，终端会显示：
+```
+🚀 OpenClaw 已启动
+📡 渠道: terminal
+💡 输入你的第一条指令...
+```
+
+### 立即发送这 3 条指令：
+
+**指令 1：让 AI 帮你写代码**
+```
+写一个 Python 脚本，读取当前文件夹所有 .txt 文件，统计每个文件有多少行
+```
+
+**指令 2：让 AI 帮你操作文件**
+```
+创建一个新文件叫 demo.py，内容是上面的代码
+```
+
+**指令 3：让 AI 帮你运行**
+```
+运行 demo.py
+```
+
+---
+
+## 🔧 配置文件说明
+
+安装后会在 `~/.openclaw/` 目录生成：
 
 ```
 ~/.openclaw/
-├── config.yaml      # 主配置文件
-├── skills/          # 技能目录
+├── config.yaml      # 主配置（模型、渠道、记忆）
+├── skills/          # 你的技能扩展
 ├── memory/         # 记忆存储
-└── channels/       # 渠道配置
+└── logs/           # 运行日志
 ```
 
-### 5. 配置示例
+### config.yaml 完整示例
 
 ```yaml
-# config.yaml
+# ~/.openclaw/config.yaml
 model:
-  provider: openai  # 或 anthropic, ollama, minimax
-  apiKey: ${OPENAI_API_KEY}
-  
+  provider: minimax
+  apiKey: your-api-key-here
+  model: abab6.5s-chat
+
+# 可选：配置渠道
 channels:
-  - type: telegram
-    enabled: true
-    token: ${TELEGRAM_BOT_TOKEN}
-    
+  - type: terminal  # 默认，已启用
+
+# 可选：启用记忆（让 AI 记住你的偏好）
 memory:
   enabled: true
-  type: local  # 或 sqlite
 ```
 
-## 启动 OpenClaw
+---
 
-```bash
-# 启动服务
-openclaw start
-
-# 或以后台模式运行
-openclaw start --daemon
-```
-
-启动成功后，你会看到：
-
-```
-🚀 OpenClaw 已启动
-📡 渠道状态:
-   ✅ Telegram: 已连接
-   ✅ Webchat: 已连接
-💡 发送消息开始使用
-```
-
-## 常见问题
+## ❓ 常见问题
 
 ### Q: 提示 "command not found"
-A: 检查 Node.js 和 npm 是否正确安装，或尝试重启终端
-
-### Q: API Key 怎么获取？
-A: 
-- OpenAI: https://platform.openai.com/api-keys
-- Anthropic: https://console.anthropic.com/
-- MiniMax: https://platform.minimaxi.com/
-
-### Q: 如何查看日志？
 ```bash
-openclaw logs
-openclaw logs --tail 100  # 查看最近 100 行
+# Windows: 重启 PowerShell
+# macOS/Linux: 检查 PATH
+echo $PATH
 ```
 
-## 下一步
+### Q: API Key 报错
+- 确认密钥复制完整（sk-xxx 开头）
+- 检查余额是否充足
+- 尝试切换模型
 
-- [02. 第一个任务](./02-first-task.md) — 发送你的第一条指令
-- [03. 渠道配置](./03-channels.md) — 配置更多渠道
+### Q: 响应太慢
+- 使用 MiniMax（国内网络）
+- 检查网络代理设置
+
+---
+
+## 🎉 这节目标达成
+
+✅ 会安装 OpenClaw  
+✅ 会配置 AI 模型  
+✅ 已完成第一个任务  
+
+---
+
+## ➡️ 下节学什么
+
+- [02. 你的第一个任务](./02-first-task.md) — 学习用自然语言指挥 AI 干各种活
+- [03. 把 AI 接入微信/飞书/Telegram](./03-channels.md) — 让 AI 随时随地响应
+
+---
